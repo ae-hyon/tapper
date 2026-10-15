@@ -186,7 +186,10 @@ struct PopoverView: View {
                 Text(controller.statusLine).font(.system(size: 11))
             }
             if controller.taps > 0 {
-                Text("\(controller.taps)회 · 실측 \(String(format: "%.1f", controller.rate)) tap/s")
+                // 이 값은 엔진이 '쏜' 횟수다. Clicker.tick()이 tapSink 직후
+                // 카운터를 올리므로, 전송이 전부 버려져도 설정값대로 표시된다.
+                // "실측"으로 적으면 화면에 반영된 횟수로 오해하게 된다.
+                Text("\(controller.taps)회 · 전송 \(String(format: "%.1f", controller.rate)) tap/s")
                     .font(.system(size: 11, design: .monospaced))
                     .foregroundStyle(.secondary)
             }

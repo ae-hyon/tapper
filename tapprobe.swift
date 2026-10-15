@@ -27,7 +27,8 @@ func usage() {
       tapprobe front      최전면 앱 출력 (미러링 포커스 확인용)
       tapprobe ax         손쉬운 사용 권한 보유 여부 출력
 
-    공통: holdMs 기본 15 · count 최대 \(MAX_COUNT) · 종료 후 커서 원위치 복원
+    공통: holdMs 생략 시 간격의 1/3 (최대 15ms) · count 최대 \(MAX_COUNT)
+          종료 후 커서 원위치 복원
     """)
 }
 
@@ -99,7 +100,10 @@ func parseParams(_ args: [String], cmd: String, example: String) -> TapParams {
     guard let count = Int(args[0]) else { fail("count를 숫자로 읽을 수 없습니다: '\(args[0])'") }
     guard let intervalMs = Int(args[1]) else { fail("intervalMs를 숫자로 읽을 수 없습니다: '\(args[1])'") }
 
-    var holdMs = 15
+    // 누름 시간을 생략하면 간격에 맞춰 자동으로 정한다. 15ms 고정으로 두면
+    // 저간격 테스트가 "intervalMs는 holdMs보다 커야 합니다"로 막힌다.
+    // 앱의 Settings와 같은 규칙(간격의 1/3, 최대 15ms)을 쓴다.
+    var holdMs = min(15, max(1, intervalMs / 3))
     if args.count >= 3 {
         guard let h = Int(args[2]) else { fail("holdMs를 숫자로 읽을 수 없습니다: '\(args[2])'") }
         holdMs = h
