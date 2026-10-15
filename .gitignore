@@ -1,0 +1,10 @@
+# 빌드 산출물
+build/
+
+# 컴파일된 CLI (소스 tapprobe.swift는 포함)
+tapprobe
+
+# 로컬 도구 상태
+.omc/
+
+.DS_Store
