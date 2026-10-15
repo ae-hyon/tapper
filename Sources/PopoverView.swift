@@ -34,7 +34,7 @@ struct PopoverView: View {
             footer
         }
         .padding(14)
-        .frame(width: 310)
+        .frame(width: 360)
         .onAppear { controller.refreshTrust() }
     }
 
@@ -86,14 +86,23 @@ struct PopoverView: View {
 
     private var intervalRow: some View {
         VStack(alignment: .leading, spacing: 2) {
-            HStack {
+            HStack(spacing: 6) {
                 Text("간격").font(.system(size: 12)).frame(width: 52, alignment: .leading)
                 Slider(value: $settings.intervalMs,
                        in: Settings.intervalRange, step: 1)
                     .disabled(isActive)
-                Text("\(Int(settings.intervalMs))ms")
-                    .font(.system(size: 12, design: .monospaced))
-                    .frame(width: 58, alignment: .trailing)
+                // 슬라이더로는 2ms 같은 끝값을 정확히 집기 어렵다.
+                // 같은 값에 묶인 입력란으로 직접 타이핑할 수 있게 한다.
+                TextField("", value: $settings.intervalMs, format: .number)
+                    .textFieldStyle(.roundedBorder)
+                    .multilineTextAlignment(.trailing)
+                    .frame(width: 52)
+                    .disabled(isActive)
+                Text("ms").font(.system(size: 12)).foregroundStyle(.secondary)
+                Stepper("", value: $settings.intervalMs,
+                        in: Settings.intervalRange, step: 1)
+                    .labelsHidden()
+                    .disabled(isActive)
             }
             Text("요청 \(String(format: "%.1f", 1000 / settings.intervalMs)) tap/s")
                 .font(.system(size: 10))

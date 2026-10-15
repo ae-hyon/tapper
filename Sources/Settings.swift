@@ -42,10 +42,13 @@ final class Settings: ObservableObject {
 
     @Published var intervalMs: Double {
         didSet {
+            // 키보드로 직접 입력받으므로 범위 밖 값이나 NaN이 들어올 수 있다.
+            // NaN을 흘리면 1000/간격 계산과 타이머 스케줄이 동시에 깨진다.
+            let base = intervalMs.isFinite ? intervalMs.rounded() : 100
+            let fixed = base.clamped(to: Settings.intervalRange)
+            if fixed != intervalMs { intervalMs = fixed; return }
             // 누름 시간이 간격 이상이면 실효 레이트가 무너진다. 엔진도 방어하지만
             // UI에서 먼저 맞춰둔다.
-            let clamped = intervalMs.clamped(to: Settings.intervalRange)
-            if clamped != intervalMs { intervalMs = clamped; return }
             if holdMs >= intervalMs { holdMs = max(1, (intervalMs / 3).rounded(.down)) }
             d.set(intervalMs, forKey: "intervalMs")
         }

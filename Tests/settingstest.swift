@@ -77,7 +77,25 @@ struct SettingsTest {
         s.intervalMs = 0
         check(s.intervalMs == 2, "0ms → 2ms로 클램프", "실제 \(s.intervalMs)")
 
-        print("\n[8] 모드별 StopMode 변환")
+        print("\n[8] 간격 — 키보드 입력 방어")
+        // 입력란을 비우면 NaN이 들어올 수 있다. 흘리면 1000/간격 계산과
+        // 타이머 스케줄이 동시에 깨진다.
+        s.intervalMs = Double.nan
+        check(s.intervalMs == 100, "NaN → 기본값 100", "실제 \(s.intervalMs)")
+        s.intervalMs = Double.infinity
+        check(s.intervalMs.isFinite, "무한대 → 유한값", "실제 \(s.intervalMs)")
+        s.intervalMs = 7.4
+        check(s.intervalMs == 7, "7.4 → 7 (1ms 단위)", "실제 \(s.intervalMs)")
+        s.intervalMs = 7.6
+        check(s.intervalMs == 8, "7.6 → 8 (1ms 단위)", "실제 \(s.intervalMs)")
+        s.intervalMs = 99999
+        check(s.intervalMs == 2000, "상한 초과 → 2000", "실제 \(s.intervalMs)")
+        // NaN 경로를 지난 뒤에도 누름 시간 불변식이 유지되어야 한다.
+        s.intervalMs = Double.nan
+        check(s.holdMs < s.intervalMs, "NaN 복구 후에도 누름 < 간격",
+              "간격 \(s.intervalMs) 누름 \(s.holdMs)")
+
+        print("\n[9] 모드별 StopMode 변환")
         s.mode = .duration; s.durationSec = 45
         check(s.stopMode == .duration(45), "duration(45)", "실제 \(s.stopMode)")
         s.mode = .count; s.countLimit = 77
