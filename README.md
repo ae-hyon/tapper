@@ -27,7 +27,7 @@ Intel 맥에서는 iPhone 미러링이 동작하지 않습니다.
 ## 설치
 
 ```bash
-git clone <저장소-주소> tapper
+git clone https://github.com/ae-hyon/tapper.git
 cd tapper && ./install.sh
 ```
 
