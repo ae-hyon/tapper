@@ -89,7 +89,7 @@ struct PopoverView: View {
             HStack {
                 Text("간격").font(.system(size: 12)).frame(width: 52, alignment: .leading)
                 Slider(value: $settings.intervalMs,
-                       in: Settings.intervalRange, step: 5)
+                       in: Settings.intervalRange, step: 1)
                     .disabled(isActive)
                 Text("\(Int(settings.intervalMs))ms")
                     .font(.system(size: 12, design: .monospaced))

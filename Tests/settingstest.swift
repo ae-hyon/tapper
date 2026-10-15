@@ -57,7 +57,27 @@ struct SettingsTest {
         check(s.holdMs < s.intervalMs,
               "간격 100ms → 누름이 간격 미만", "간격 \(s.intervalMs) 누름 \(s.holdMs)")
 
-        print("\n[6] 모드별 StopMode 변환")
+        print("\n[6] 하한 2ms에서도 누름 시간이 간격 미만")
+        // 2ms에서 (2/3).rounded(.down) == 0 이므로 max(1, 0) == 1 이 되어야 한다.
+        // 이게 깨지면 hold >= interval이 되어 실효 레이트가 조용히 무너진다.
+        for iv in [2.0, 3.0, 4.0, 5.0] {
+            s.intervalMs = iv
+            check(s.holdMs < s.intervalMs && s.holdMs >= 1,
+                  "간격 \(Int(iv))ms → 누름 \(Int(s.holdMs))ms",
+                  "간격 \(s.intervalMs) 누름 \(s.holdMs)")
+        }
+        s.intervalMs = 2
+        check(s.makeConfig().holdMs < s.makeConfig().intervalMs,
+              "makeConfig()도 hold < interval 유지",
+              "config hold \(s.makeConfig().holdMs) interval \(s.makeConfig().intervalMs)")
+
+        print("\n[7] 간격 하한 클램프 (2ms)")
+        s.intervalMs = 1
+        check(s.intervalMs == 2, "1ms → 2ms로 클램프", "실제 \(s.intervalMs)")
+        s.intervalMs = 0
+        check(s.intervalMs == 2, "0ms → 2ms로 클램프", "실제 \(s.intervalMs)")
+
+        print("\n[8] 모드별 StopMode 변환")
         s.mode = .duration; s.durationSec = 45
         check(s.stopMode == .duration(45), "duration(45)", "실제 \(s.stopMode)")
         s.mode = .count; s.countLimit = 77

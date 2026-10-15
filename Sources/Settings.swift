@@ -26,7 +26,10 @@ enum UIMode: String, CaseIterable, Identifiable {
 }
 
 final class Settings: ObservableObject {
-    static let intervalRange = 5.0...2000.0
+    // 하한 2ms는 엔진이 오차 없이 낼 수 있는 한계값이다(ratebench 측정).
+    // "이 값이 대상 앱에 반영된다"는 보장이 아니다 — 반영 여부는 대상 앱마다
+    // 다르므로, 유실이 생기면 사용자가 간격을 올려 맞춘다.
+    static let intervalRange = 2.0...2000.0
     static let holdRange = 1.0...100.0
     static let durationRange = 1.0...3600.0
     static let countRange = 1...100_000
